@@ -6,7 +6,7 @@ from collections import defaultdict
 import time
 
 import torch
-from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline
+from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline, UNet2DConditionModel
 
 # local imports
 from controller import VectorStore, register_vector_control

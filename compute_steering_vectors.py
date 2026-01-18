@@ -5,7 +5,7 @@ from PIL import Image
 from collections import defaultdict
 
 import torch
-from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline
+from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline, UNet2DConditionModel
 
 # local imports
 from construct_prompts import get_prompts_concrete, get_prompts_style, get_prompts_human_related
