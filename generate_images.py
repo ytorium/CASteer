@@ -86,7 +86,7 @@ pipe.to(device)
 
 
 def run_model(model_type, pipe, prompt, seed, num_denoising_steps):
-    if args.model in ['sd14', 'sd21', 'sdxl']:
+    if args.model in ['sd14', 'sd21', 'sdxl', 'fine-tune']:
         image = pipe(prompt=prompt,
                      num_inference_steps=num_denoising_steps,
                      generator=torch.Generator(device=device).manual_seed(seed)
