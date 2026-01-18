@@ -62,6 +62,24 @@ elif args.model == 'sdxl-turbo':
          variant="fp16",
          cache_dir='./cache'
      )
+elif args.model == 'fine-tune':
+     # load pipeline
+     model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+     pipe = StableDiffusionXLPipeline.from_pretrained(
+         model_id,
+         torch_dtype=torch.float16,
+         variant="fp16",
+         use_safetensors=True)
+
+     # load finetuned model
+     unet_id = "mhdang/dpo-sdxl-text2image-v1"
+     unet = UNet2DConditionModel.from_pretrained(
+         unet_id,
+         subfolder="unet",
+         torch_dtype=torch.float16)
+
+     pipe.unet = unet
+
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 pipe.to(device)
