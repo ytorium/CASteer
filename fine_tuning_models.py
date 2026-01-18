@@ -3,13 +3,12 @@ from diffusers import StableDiffusionXLPipeline, UNet2DConditionModel
 
 
 # load pipeline
-model_id = "stabilityai/sdxl-turbo"
+model_id = "stabilityai/stable-diffusion-xl-base-1.0"
 pipe = StableDiffusionXLPipeline.from_pretrained(
     model_id,
     torch_dtype=torch.float16,
     variant="fp16",
-    cache_dir='./cache',
-    use_safetensors=True).to("cuda")
+    use_safetensors=True)   #.to("cuda")
 
 # load finetuned model
 unet_id = "mhdang/dpo-sdxl-text2image-v1"
