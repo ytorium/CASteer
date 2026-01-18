@@ -14,7 +14,7 @@ from controller import VectorStore, register_vector_control
 # parsing arguments
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo'], default="sd14")
+parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo', 'fine-tune'], default="sd14")
 parser.add_argument('--image_name', type=str, default="girl_with_kitty")
 parser.add_argument('--prompt', type=str, default="a girl with a kitty")
 parser.add_argument('--seed', type=int, default=0)
