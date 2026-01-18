@@ -14,14 +14,13 @@ from controller import VectorStore, register_vector_control
 # parsing arguments
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo'], default="sd14")
+parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo', 'fine-tune'], default="sd14")
 parser.add_argument('--mode', type=str, choices=['concrete', 'human-related', 'style'], default="style")
 parser.add_argument('--num_denoising_steps', type=int, default=50) # 50 for sd14, sd21, 1 for turbo, 30 for sdxl
 parser.add_argument('--concept_pos', type=str, default="anime")
 parser.add_argument('--concept_neg', type=str, default=None)
 parser.add_argument('--save_dir', type=str, default='steering_vectors') # path to saving steering vectors
 args = parser.parse_args()
-
 
 
 if args.model == 'sd14':
@@ -58,10 +57,27 @@ elif args.model == 'sdxl-turbo':
          variant="fp16",
          cache_dir='./cache'
      ) 
-        
+elif args.model == 'fine-tune':
+     # load pipeline
+     model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+     pipe = StableDiffusionXLPipeline.from_pretrained(
+         model_id,
+         torch_dtype=torch.float16,
+         variant="fp16",
+         use_safetensors=True)
+
+     # load finetuned model
+     unet_id = "mhdang/dpo-sdxl-text2image-v1"
+     unet = UNet2DConditionModel.from_pretrained(
+         unet_id,
+         subfolder="unet",
+         torch_dtype=torch.float16)
+
+     pipe.unet = unet
+
         
 def run_model(model_type, pipe, prompt, seed, num_denoising_steps):
-    if args.model in ['sd14', 'sd21', 'sdxl']:
+    if args.model in ['sd14', 'sd21', 'sdxl', 'fine-tune']:
         image = pipe(prompt=prompt, 
                      num_inference_steps=num_denoising_steps, 
                      generator=torch.Generator(device=device).manual_seed(seed)
@@ -101,7 +117,7 @@ seed=0
 for i, (prompt_pos, prompt_neg) in enumerate(zip(prompts_pos, prompts_neg)):
     print('Prompt pair number', i, 'out of', len(prompts_pos))
     print('Positive prompt:', prompt_pos)
-    print('Negative prompt', prompt_neg)
+    print('Negative prompt:', prompt_neg)
 
     controller = VectorStore()
     controller.steer=False
