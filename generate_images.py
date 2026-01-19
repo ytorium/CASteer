@@ -4,12 +4,12 @@ import pickle
 from PIL import Image
 from collections import defaultdict
 import time
-
 import torch
 from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline, UNet2DConditionModel
 
 # local imports
 from controller import VectorStore, register_vector_control
+from models import get_model
 
 # parsing arguments
 import argparse
@@ -28,58 +28,7 @@ parser.add_argument('--save_dir', type=str, default='images') # path to saving g
 args = parser.parse_args()
 
 
-if args.model == 'sd14':
-    pipe = StableDiffusionPipeline.from_pretrained(
-        "CompVis/stable-diffusion-v1-4",
-         torch_dtype=torch.float16,
-        cache_dir='./cache'
-        )
-elif args.model == 'sd21':
-    pipe = StableDiffusionPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-2-1",
-         torch_dtype=torch.float16,
-        cache_dir='./cache'
-        )
-elif args.model == 'sd21-turbo':
-    pipe = AutoPipelineForText2Image.from_pretrained(
-        "stabilityai/sd-turbo",
-        torch_dtype=torch.float16,
-        variant="fp16",
-        cache_dir='./cache'
-    )
-elif args.model == 'sdxl':
-     pipe = DiffusionPipeline.from_pretrained(
-        "stabilityai/stable-diffusion-xl-base-1.0",
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-        variant="fp16",
-         cache_dir='./cache'
-    )
-elif args.model == 'sdxl-turbo':
-     pipe = AutoPipelineForText2Image.from_pretrained(
-         "stabilityai/sdxl-turbo",
-         torch_dtype=torch.float16,
-         variant="fp16",
-         cache_dir='./cache'
-     )
-elif args.model == 'fine-tune':
-     # load pipeline
-     model_id = "stabilityai/stable-diffusion-xl-base-1.0"
-     pipe = StableDiffusionXLPipeline.from_pretrained(
-         model_id,
-         torch_dtype=torch.float16,
-         variant="fp16",
-         use_safetensors=True)
-
-     # load finetuned model
-     unet_id = "mhdang/dpo-sdxl-text2image-v1"
-     unet = UNet2DConditionModel.from_pretrained(
-         unet_id,
-         subfolder="unet",
-         torch_dtype=torch.float16)
-
-     pipe.unet = unet
-
+pipe = get_model(args.model)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 pipe.to(device)
@@ -107,11 +56,11 @@ image_name = args.image_name.replace(' ','_')
 image_save_dir = args.save_dir+'/'+image_name
 alphas = args.alpha.split(',')
 
+print('Generating for prompt:')
+print(args.prompt)
+
 for i in range(len(alphas)):
     alphai = int(alphas[i])
-
-    print('Generating for prompt:')
-    print(args.prompt)
     print('Step with alpha:', alphai)
 
     if not os.path.exists(image_save_dir):

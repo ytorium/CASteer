@@ -1,7 +1,7 @@
 import os
 import torch
 import ImageReward as RM
-from PIL import Image
+# from PIL import Image
 
 # parsing arguments
 import argparse
@@ -24,8 +24,8 @@ with torch.no_grad():
     ranking, rewards = model.inference_rank(args.prompt, img_list)
     # Print the result
     print("\nPreference predictions:")
-    #print(f"ranking = {ranking}")
-    #print(f"rewards = {rewards}")
+    # print(f"ranking = {ranking}")
+    # print(f"rewards = {rewards}")
     best_score = 0.0
     best_index = 0
     for index in range(len(img_list)):
@@ -36,5 +36,5 @@ with torch.no_grad():
             best_index = index
 
 print(f"The best image with the highest ImageReward score is {img_list[best_index]}")
-image = Image.open(img_list[best_index])
-image.show()
+# image = Image.open(img_list[best_index])
+# image.show()
