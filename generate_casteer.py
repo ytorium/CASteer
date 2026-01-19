@@ -14,7 +14,7 @@ from models import get_model
 # parsing arguments
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo'], default="sd14")
+parser.add_argument('--model', type=str, choices=['sd14', 'sd21', 'sd21-turbo', 'sdxl', 'sdxl-turbo', 'fine-tune'], default="sd14")
 parser.add_argument('--image_name', type=str, default="girl_with_kitty")
 parser.add_argument('--prompt', type=str, default="a girl with a kitty")
 parser.add_argument('--seed', type=int, default=0)
@@ -35,7 +35,7 @@ pipe.to(device)
         
         
 def run_model(model_type, pipe, prompt, seed, num_denoising_steps):
-    if args.model in ['sd14', 'sd21', 'sdxl']:
+    if args.model in ['sd14', 'sd21', 'sdxl', 'fine-tune']:
         image = pipe(prompt=prompt, 
                      num_inference_steps=num_denoising_steps, 
                      generator=torch.Generator(device=device).manual_seed(seed)
@@ -59,7 +59,7 @@ if not os.path.exists(args.save_dir):
 if args.not_steer:
     image = run_model(args.model, pipe, args.prompt, args.seed, args.num_denoising_steps)
     
-    image.save(os.path.join(args.save_dir, "orig_{}_{}.png".format(args.prompt, args.seed)))
+    image.save(os.path.join(args.save_dir, "orig_{}_{}.png".format(args.image_name, args.seed)))
     
     
 else:
@@ -79,6 +79,6 @@ else:
     
     image = run_model(args.model, pipe, args.prompt, args.seed, args.num_denoising_steps)
     
-    image.save(os.path.join(args.save_dir, "steered_{}_{}.png".format(args.prompt, args.seed)))
+    image.save(os.path.join(args.save_dir, "steered_{}_{}.png".format(args.image_name, args.seed)))
     
 
