@@ -2,7 +2,7 @@ import torch
 from diffusers import StableDiffusionPipeline, DiffusionPipeline, AutoPipelineForText2Image, StableDiffusionXLPipeline, UNet2DConditionModel
 
 
-get_model(model):
+def get_model(model):
     if model == 'sd14':
         pipe = StableDiffusionPipeline.from_pretrained(
             "CompVis/stable-diffusion-v1-4",
